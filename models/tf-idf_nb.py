@@ -41,7 +41,7 @@ def shingles(string: str, q: int):
 # data
 # clean_completeSpamAssassin
 # clean_spam
-data = pd.read_csv(f'../data/clean_spam.csv', encoding='latin')
+data = pd.read_csv(f'../data/clean_completeSpamAssassin.csv', encoding='latin')
 data.tokens = data.tokens.apply(literal_eval)
 # choice: text, str_tokens, tokens
 
@@ -75,11 +75,13 @@ for look_up in look_ups:
         # generating vectors
         if look_up in ['text', 'str_tokens']:
             corpus = list(data[look_up])
-            vectorizer = TfidfVectorizer(analyzer='char', ngram_range=(q, q)).fit(corpus)
+            vectorizer = TfidfVectorizer(analyzer='char', ngram_range=(q, q), min_df=0.001).fit(corpus)
+            #vectorizer = TfidfVectorizer(analyzer='char', ngram_range=(q, q), max_df=0.7).fit(corpus)
             X = vectorizer.fit_transform(df_train[look_up])
 
         else:
-            vectorizer = TfidfVectorizer(tokenizer=identity_tokenizer,lowercase=False)
+            vectorizer = TfidfVectorizer(tokenizer=identity_tokenizer, lowercase=False, min_df=0.001)
+            #vectorizer = TfidfVectorizer(tokenizer=identity_tokenizer, lowercase=False, max_df=0.7)
             vecs = vectorizer.fit_transform(df_train[look_up])
             feature_names = vectorizer.get_feature_names_out()
             dense = vecs.todense()
