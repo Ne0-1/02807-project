@@ -11,4 +11,4 @@ https://www.kaggle.com/datasets/nitishabharathi/email-spam-dataset
 https://www.kaggle.com/code/therealsampat/fake-news-detection
 
 # Download of clean data: 
-https://we.tl/t-ZhCO1LcSgO
+https://we.tl/t-1A7Gx6rxG7
