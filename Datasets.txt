@@ -9,4 +9,6 @@ https://www.kaggle.com/datasets/nitishabharathi/email-spam-dataset
 
 # Fake news
 https://www.kaggle.com/code/therealsampat/fake-news-detection
-Download: https://we.tl/t-FqcRns5KPJ
+
+# Download of clean data: 
+https://we.tl/t-1A7Gx6rxG7
