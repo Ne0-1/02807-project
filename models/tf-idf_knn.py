@@ -28,9 +28,16 @@ def identity_tokenizer(text):
 
 
 # data
+#dataset = 'clean_completeSpamAssassin'
+dataset = 'clean_spam'
+
+if dataset == 'clean_spam':
+    min_df = 1
+else:
+    min_df = 0.001
 # clean_completeSpamAssassin
 # clean_spam
-data = pd.read_csv(f'../data/clean_completeSpamAssassin.csv', encoding='latin')
+data = pd.read_csv(f'../data/{dataset}.csv', encoding='latin')
 data.tokens = data.tokens.apply(literal_eval)
 
 
@@ -41,12 +48,14 @@ data['text_tokenized'] = pd.DataFrame.from_dict(df_text_tokenized, orient='index
 # raw/BOW, raw/Q, prep/BOW, prep/Q:
 look_ups = ['text_tokenized', 'text', 'tokens', 'str_tokens']
 
+dims = {}
+
 for look_up in look_ups:
     labels = ['ham', 'spam']
     q = 5
     num_neighs = 5 # 2
     num_folds = 5
-
+    dims[look_up] = []
     kf = RepeatedKFold(n_splits=num_folds, n_repeats=1, random_state=seed)
     f1_scores = []
     accuracies = []
@@ -59,13 +68,15 @@ for look_up in look_ups:
         if look_up in ['text', 'str_tokens']:
             # shingles
             corpus = list(data[look_up])
-            vectorizer = TfidfVectorizer(analyzer='char', ngram_range=(q, q), min_df=0.001).fit(corpus)
+            vectorizer = TfidfVectorizer(analyzer='char', ngram_range=(q, q), min_df=min_df).fit(corpus)
             #vectorizer = TfidfVectorizer(analyzer='char', ngram_range=(q, q), max_df=0.7).fit(corpus)
-
             X = vectorizer.fit_transform(df_train[look_up])
+            feature_names = vectorizer.get_feature_names_out()
+            dims[look_up].append(len(feature_names))
+
 
         else:
-            vectorizer = TfidfVectorizer(tokenizer=identity_tokenizer, lowercase=False, min_df=0.001)
+            vectorizer = TfidfVectorizer(tokenizer=identity_tokenizer, lowercase=False, min_df=min_df)
             #vectorizer = TfidfVectorizer(tokenizer=identity_tokenizer, lowercase=False, max_df=0.7)
             vecs = vectorizer.fit_transform(df_train[look_up])
             feature_names = vectorizer.get_feature_names_out()
@@ -73,6 +84,7 @@ for look_up in look_ups:
             lst1 = dense.tolist()
             TDM = pd.DataFrame(lst1, columns=feature_names).dropna()
             X = vecs
+            dims[look_up].append(len(feature_names))
         # training classifier
         neigh = KNeighborsClassifier(n_neighbors=num_neighs, metric='cosine')
         neigh.fit(X, df_train.label)
@@ -92,7 +104,7 @@ for look_up in look_ups:
     print('\n')
 
 
-
+a=0
 
 
 
